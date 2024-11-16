@@ -1,5 +1,6 @@
 package com.enigma.mysimpleroomdb
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -20,6 +21,8 @@ class EditActivity : AppCompatActivity() {
     private lateinit var binding: ActivityEditBinding
     val db by lazy { AppDatabase(this) }
     private var noteId = 0
+    var intentType = 0
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,24 +34,30 @@ class EditActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+        intentType = intent.getIntExtra("intent_type", 0)
         setupLstener()
         setupView()
 
-        noteId = intent.getIntExtra("intent_id",0)
-        Toast.makeText(this,noteId.toString(), Toast.LENGTH_SHORT).show()
+        noteId = intent.getIntExtra("intent_id", 0)
+        Toast.makeText(this, noteId.toString(), Toast.LENGTH_SHORT).show()
     }
 
-    fun setupView(){
-        val intentType = intent.getIntExtra("intent_type",0)
-        when(intentType){
+    @SuppressLint("SetTextI18n")
+    fun setupView() {
+        when (intentType) {
 //            Constant.TYPE_CREATE ->{
 //
 //            }
-            Constant.TYPE_READ ->{
+            Constant.TYPE_READ -> {
                 binding.buttonSave.visibility = View.GONE
                 binding.editNama.isEnabled = false
                 binding.editUmur.isEnabled = false
                 binding.editAlamat.isEnabled = false
+                getNote()
+            }
+
+            Constant.TYPE_UPDATE -> {
+                binding.buttonSave.text = "UPDATE"
                 getNote()
             }
         }
@@ -57,21 +66,37 @@ class EditActivity : AppCompatActivity() {
     private fun setupLstener() {
         binding.buttonSave.setOnClickListener {
             CoroutineScope(Dispatchers.IO).launch {
-                db.noteDao().addNote(
-                    //addNote yg kita butuhkan adalah id,title,dan notenya
-                    //id disini karena sudah auto generate maka tidak harus diisi
-                    Note(
-                        0,
-                        binding.editNama.text.toString(),
-                        binding.editUmur.text.toString(),
-                        binding.editAlamat.text.toString()
-                    )
-                )
+                when (intentType) {
+                    Constant.TYPE_CREATE -> {
+                        db.noteDao().addNote(
+                            //addNote yg kita butuhkan adalah id,title,dan notenya
+                            //id disini karena sudah auto generate maka tidak harus diisi
+                            Note(
+                                0,
+                                binding.editNama.text.toString(),
+                                binding.editUmur.text.toString(),
+                                binding.editAlamat.text.toString()
+                            )
+                        )
+                    }
+
+                    Constant.TYPE_UPDATE -> {
+                        db.noteDao().updateNote(
+                            Note(
+                                noteId,
+                                binding.editNama.text.toString(),
+                                binding.editUmur.text.toString(),
+                                binding.editAlamat.text.toString()
+                            )
+                        )
+                    }
+                }
             }
             finish()
 //            startActivity(Intent(this, MainActivity::class.java))
         }
     }
+
     fun getNote() {
         noteId = intent.getIntExtra("intent_id", 0)
         CoroutineScope(Dispatchers.IO).launch {

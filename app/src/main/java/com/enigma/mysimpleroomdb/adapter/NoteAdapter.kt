@@ -36,6 +36,9 @@ class NoteAdapter(
             textTitle.setOnClickListener {
                 listener.onClick(note)
             }
+            buttonEdit.setOnClickListener {
+                listener.onUpdate(note)
+            }
         }
     }
 
@@ -59,5 +62,6 @@ class NoteAdapter(
 
     interface OnAdapterListener{
         fun onClick(note: Note)
+        fun onUpdate(note: Note)
     }
 }

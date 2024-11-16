@@ -66,6 +66,10 @@ class MainActivity : AppCompatActivity() {
                 //Toast.makeText(applicationContext, note.nama, Toast.LENGTH_SHORT).show()
                 intentEdit(note.id, Constant.TYPE_READ)
             }
+
+            override fun onUpdate(note: Note) {
+                intentEdit(note.id,Constant.TYPE_UPDATE)
+            }
         })
 
         binding.listNote.apply {
