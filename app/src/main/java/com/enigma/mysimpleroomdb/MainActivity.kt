@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity() {
         super.onStart()
         CoroutineScope(Dispatchers.IO).launch {
             val notes = db.noteDao().getNotes()
-            Log.d(activityMain,"DbResponese : $notes")
+            Log.d(activityMain,"DbResponse : $notes")
         }
     }
 
