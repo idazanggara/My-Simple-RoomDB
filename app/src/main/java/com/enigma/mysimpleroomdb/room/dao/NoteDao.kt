@@ -1,6 +1,10 @@
 package com.enigma.mysimpleroomdb.room.dao
 
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.Query
+import androidx.room.Update
 import com.enigma.mysimpleroomdb.room.entities.Note
 
 @Dao
@@ -12,7 +16,7 @@ interface NoteDao {
     suspend fun getNotes() : List<Note>
 
     @Query("SELECT * FROM note WHERE id=:note_id")
-    suspend fun getNote(note_id: Int) : List<Note>
+    suspend fun getNote(note_id: Int) : Note
 
     @Update
     suspend fun updateNote(note: Note)

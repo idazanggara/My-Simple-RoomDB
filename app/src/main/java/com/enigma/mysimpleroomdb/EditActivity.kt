@@ -46,6 +46,10 @@ class EditActivity : AppCompatActivity() {
 //            }
             Constant.TYPE_READ ->{
                 binding.buttonSave.visibility = View.GONE
+                binding.editNama.isEnabled = false
+                binding.editUmur.isEnabled = false
+                binding.editAlamat.isEnabled = false
+                getNote()
             }
         }
     }
@@ -66,6 +70,15 @@ class EditActivity : AppCompatActivity() {
             }
             finish()
 //            startActivity(Intent(this, MainActivity::class.java))
+        }
+    }
+    fun getNote() {
+        noteId = intent.getIntExtra("intent_id", 0)
+        CoroutineScope(Dispatchers.IO).launch {
+            val notes = db.noteDao().getNote(noteId)
+            binding.editNama.setText(notes.nama)
+            binding.editUmur.setText(notes.umur)
+            binding.editAlamat.setText(notes.alamat)
         }
     }
 }
