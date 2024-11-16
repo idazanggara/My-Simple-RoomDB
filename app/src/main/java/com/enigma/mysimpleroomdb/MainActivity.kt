@@ -45,7 +45,7 @@ class MainActivity : AppCompatActivity() {
         super.onStart()
         CoroutineScope(Dispatchers.IO).launch {
             val notes = db.noteDao().getNotes()
-//            Log.d(activityMain,"DbResponse : $notes")
+            Log.d(activityMain,"DbResponse : $notes")
             withContext(Dispatchers.Main){
                 noteAdapter.setData(notes)
             }
