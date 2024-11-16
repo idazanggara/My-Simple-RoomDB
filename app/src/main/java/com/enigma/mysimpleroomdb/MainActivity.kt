@@ -4,15 +4,20 @@ package com.enigma.mysimpleroomdb
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.enigma.mysimpleroomdb.adapter.NoteAdapter
 import com.enigma.mysimpleroomdb.databinding.ActivityMainBinding
 import com.enigma.mysimpleroomdb.room.AppDatabase
+import com.enigma.mysimpleroomdb.room.entities.Note
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity() {
 
@@ -20,6 +25,8 @@ class MainActivity : AppCompatActivity() {
     val activityMain = "MAINACTIVITY"
 
     private lateinit var binding : ActivityMainBinding
+
+    lateinit var noteAdapter: NoteAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,13 +39,17 @@ class MainActivity : AppCompatActivity() {
             insets
         }
         setupListener()
+        setUpRecycleView()
     }
 
     override fun onStart() {
         super.onStart()
         CoroutineScope(Dispatchers.IO).launch {
             val notes = db.noteDao().getNotes()
-            Log.d(activityMain,"DbResponse : $notes")
+//            Log.d(activityMain,"DbResponse : $notes")
+            withContext(Dispatchers.Main){
+                noteAdapter.setData(notes)
+            }
         }
     }
 
@@ -46,6 +57,20 @@ class MainActivity : AppCompatActivity() {
     private fun setupListener(){
         binding.buttonCreate.setOnClickListener {
             startActivity(Intent(this,EditActivity::class.java))
+        }
+    }
+
+    private fun setUpRecycleView(){
+        noteAdapter = NoteAdapter(arrayListOf(), object : NoteAdapter.OnAdapterListener{
+            override fun onClick(note: Note) {
+                Toast.makeText(applicationContext, note.nama, Toast.LENGTH_SHORT).show()
+            }
+
+        })
+
+        binding.listNote.apply {
+            layoutManager = LinearLayoutManager(applicationContext)
+            adapter = noteAdapter
         }
     }
 
