@@ -14,6 +14,7 @@ import com.enigma.mysimpleroomdb.adapter.NoteAdapter
 import com.enigma.mysimpleroomdb.databinding.ActivityMainBinding
 import com.enigma.mysimpleroomdb.room.AppDatabase
 import com.enigma.mysimpleroomdb.room.entities.Note
+import com.enigma.mysimpleroomdb.utils.Constant
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -23,9 +24,7 @@ class MainActivity : AppCompatActivity() {
 
     private val db by lazy { AppDatabase(this) }
     val activityMain = "MAINACTIVITY"
-
     private lateinit var binding : ActivityMainBinding
-
     lateinit var noteAdapter: NoteAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,16 +55,17 @@ class MainActivity : AppCompatActivity() {
     //Berpindah ke EditActivity
     private fun setupListener(){
         binding.buttonCreate.setOnClickListener {
-            startActivity(Intent(this,EditActivity::class.java))
+            //startActivity(Intent(this,EditActivity::class.java))
+            intentEdit(0, Constant.TYPE_CREATE)
         }
     }
 
     private fun setUpRecycleView(){
         noteAdapter = NoteAdapter(arrayListOf(), object : NoteAdapter.OnAdapterListener{
             override fun onClick(note: Note) {
-                Toast.makeText(applicationContext, note.nama, Toast.LENGTH_SHORT).show()
+                //Toast.makeText(applicationContext, note.nama, Toast.LENGTH_SHORT).show()
+                intentEdit(note.id, Constant.TYPE_READ)
             }
-
         })
 
         binding.listNote.apply {
@@ -74,4 +74,12 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    fun intentEdit(noteId : Int, intentType : Int){
+        startActivity(Intent(
+            applicationContext,EditActivity::class.java)
+            .putExtra("intent_id", noteId)
+            .putExtra("intent_type", intentType)
+
+        )
+    }
 }

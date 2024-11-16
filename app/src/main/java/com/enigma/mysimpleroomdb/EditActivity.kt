@@ -1,6 +1,8 @@
 package com.enigma.mysimpleroomdb
 
 import android.os.Bundle
+import android.view.View
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -8,6 +10,7 @@ import androidx.core.view.WindowInsetsCompat
 import com.enigma.mysimpleroomdb.databinding.ActivityEditBinding
 import com.enigma.mysimpleroomdb.room.AppDatabase
 import com.enigma.mysimpleroomdb.room.entities.Note
+import com.enigma.mysimpleroomdb.utils.Constant
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -15,8 +18,8 @@ import kotlinx.coroutines.launch
 class EditActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityEditBinding
-
     val db by lazy { AppDatabase(this) }
+    private var noteId = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,7 +32,22 @@ class EditActivity : AppCompatActivity() {
             insets
         }
         setupLstener()
+        setupView()
 
+        noteId = intent.getIntExtra("intent_id",0)
+        Toast.makeText(this,noteId.toString(), Toast.LENGTH_SHORT).show()
+    }
+
+    fun setupView(){
+        val intentType = intent.getIntExtra("intent_type",0)
+        when(intentType){
+//            Constant.TYPE_CREATE ->{
+//
+//            }
+            Constant.TYPE_READ ->{
+                binding.buttonSave.visibility = View.GONE
+            }
+        }
     }
 
     private fun setupLstener() {
