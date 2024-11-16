@@ -1,6 +1,7 @@
 package com.enigma.mysimpleroomdb
 
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -43,13 +44,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        CoroutineScope(Dispatchers.IO).launch {
-            val notes = db.noteDao().getNotes()
-            Log.d(activityMain,"DbResponse : $notes")
-            withContext(Dispatchers.Main){
-                noteAdapter.setData(notes)
-            }
-        }
+        loadData()
     }
 
     //Berpindah ke EditActivity
@@ -70,6 +65,11 @@ class MainActivity : AppCompatActivity() {
             override fun onUpdate(note: Note) {
                 intentEdit(note.id,Constant.TYPE_UPDATE)
             }
+
+            override fun onDeleted(note: Note) {
+                deletedDialog(note)
+            }
+
         })
 
         binding.listNote.apply {
@@ -85,5 +85,34 @@ class MainActivity : AppCompatActivity() {
             .putExtra("intent_type", intentType)
 
         )
+    }
+
+    private fun loadData(){
+        CoroutineScope(Dispatchers.IO).launch {
+            val notes = db.noteDao().getNotes()
+            Log.d(activityMain,"DbResponse : $notes")
+            withContext(Dispatchers.Main){
+                noteAdapter.setData(notes)
+            }
+        }
+    }
+
+    private fun deletedDialog(note: Note){
+        val alertDialog = AlertDialog.Builder(this)
+        alertDialog.apply {
+            setTitle("Konfirmasi")
+            setMessage("Yakin Mau Menghapus ${note.nama}?")
+            setNegativeButton("Batal") { dialogInterface, _ ->
+                dialogInterface.dismiss()
+            }
+            setPositiveButton("Hapus") { dialogInterface, _ ->
+                dialogInterface.dismiss()
+                CoroutineScope(Dispatchers.IO).launch {
+                    db.noteDao().deleteNote(note)
+                    loadData()
+                }
+            }
+        }
+        alertDialog.show()
     }
 }

@@ -39,6 +39,9 @@ class NoteAdapter(
             buttonEdit.setOnClickListener {
                 listener.onUpdate(note)
             }
+            buttonDelete.setOnClickListener {
+                listener.onDeleted(note)
+            }
         }
     }
 
@@ -63,5 +66,6 @@ class NoteAdapter(
     interface OnAdapterListener{
         fun onClick(note: Note)
         fun onUpdate(note: Note)
+        fun onDeleted(note: Note)
     }
 }
